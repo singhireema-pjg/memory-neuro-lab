@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neuro-Shield: Cognitive Memory Distraction Challenge</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts for futuristic cyberpunk aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .font-orbitron {
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    /* Cyberpunk Glowing Effects */
+    .glow-cyan {
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.5), inset 0 0 10px rgba(6, 182, 212, 0.3);
+    }
+    
+    .glow-magenta {
+      box-shadow: 0 0 15px rgba(236, 72, 153, 0.5), inset 0 0 10px rgba(236, 72, 153, 0.3);
+    }
+
+    .glow-amber {
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.5), inset 0 0 10px rgba(245, 158, 11, 0.3);
+    }
+
+    .glow-emerald {
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.5), inset 0 0 10px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Custom Animations */
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.03); }
+    }
+
+    .animate-pulse-glow {
+      animation: pulse-glow 2s infinite ease-in-out;
+    }
+
+    @keyframes float-item {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(3deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+
+    .animate-float {
+      animation: float-item 3s ease-in-out infinite;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .animate-shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    /* Target Distraction Floating Target */
+    .target-orb {
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .target-orb:active {
+      transform: scale(0.85);
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 flex flex-col overflow-x-hidden selection:bg-cyan-500 selection:text-black">
+
+  <!-- Header Bar -->
+  <header class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-4 py-3 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-3">
+      
+      <!-- Logo & Title -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-fuchsia-500 p-0.5 shadow-lg shadow-cyan-500/20">
+          <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+            <i data-lucide="brain-circuit" class="w-6 h-6 text-cyan-400"></i>
+          </div>
+        </div>
+        <div>
+          <h1 class="font-orbitron font-extrabold text-lg sm:text-xl tracking-wider bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-amber-300 bg-clip-text text-transparent">
+            NEURO-SHIELD
+          </h1>
+          <p class="text-xs text-slate-400 font-medium">Memory Distraction Lab (Ages 10-12)</p>
+        </div>
+      </div>
+
+      <!-- Top Quick Stats & Sound Toggle -->
+      <div class="flex items-center space-x-3 sm:space-x-6 text-sm">
+        <div class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2">
+          <i data-lucide="trophy" class="w-4 h-4 text-amber-400"></i>
+          <span class="text-xs text-slate-400">High Score:</span>
+          <span id="topHighScore" class="font-orbitron font-bold text-amber-400">0</span>
+        </div>
+
+        <div class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2">
+          <i data-lucide="zap" class="w-4 h-4 text-cyan-400"></i>
+          <span class="text-xs text-slate-400">Streak:</span>
+          <span id="topStreak" class="font-orbitron font-bold text-cyan-400">0</span>
+        </div>
+
+        <button id="soundToggleBtn" onclick="game.toggleSound()" class="p-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 transition-colors" title="Toggle Sound">
+          <i id="soundIcon" data-lucide="volume-2" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 flex flex-col space-y-6">
+
+    <!-- Top Variable Controls Panel -->
+    <div id="controlsCard" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl transition-all duration-300">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        
+        <!-- Difficulty Control -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold text-slate-400 tracking-wider uppercase flex items-center gap-1.5">
+            <i data-lucide="gauge" class="w-4 h-4 text-cyan-400"></i> Difficulty Level
+          </label>
+          <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800">
+            <button onclick="game.setDifficulty('easy')" id="btnDiffEasy" class="diff-btn py-1.5 px-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white">
+              Easy
+            </button>
+            <button onclick="game.setDifficulty('medium')" id="btnDiffMedium" class="diff-btn py-1.5 px-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white">
+              Medium
+            </button>
+            <button onclick="game.setDifficulty('hard')" id="btnDiffHard" class="diff-btn py-1.5 px-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white">
+              Hard
+            </button>
+          </div>
+          <p id="diffDesc" class="text-[11px] text-slate-400 h-4 truncate">3-4 items, simple single distractors.</p>
+        </div>
+
+        <!-- Timer / Speed Control -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold text-slate-400 tracking-wider uppercase flex items-center gap-1.5">
+            <i data-lucide="timer" class="w-4 h-4 text-fuchsia-400"></i> Phase Duration Limit
+          </label>
+          <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800">
+            <button onclick="game.setTimeLimit(5)" id="btnTime5" class="time-btn py-1.5 px-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white">
+              5 sec
+            </button>
+            <button onclick="game.setTimeLimit(10)" id="btnTime10" class="time-btn py-1.5 px-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white">
+              10 sec
+            </button>
+            <button onclick="game.setTimeLimit(15)" id="btnTime15" class="time-btn py-1.5 px-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white">
+              15 sec
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-400 h-4">Time window to memorize and handle distractors.</p>
+        </div>
+
+        <!-- Sequence Item Type -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold text-slate-400 tracking-wider uppercase flex items-center gap-1.5">
+            <i data-lucide="layers" class="w-4 h-4 text-amber-400"></i> Sequence Theme
+          </label>
+          <select id="sequenceTypeSelect" onchange="game.setSequenceType(this.value)" class="w-full bg-slate-950 border border-slate-800 text-xs text-slate-200 rounded-xl p-2 focus:outline-none focus:border-cyan-500 font-medium">
+            <option value="gems">💎 Cosmic Gem Orbs (Color & Symbol)</option>
+            <option value="numbers">🔢 Cyber Code Digits (1-9)</option>
+            <option value="shapes">📐 Galactic Geometry Shapes</option>
+          </select>
+          <p class="text-[11px] text-slate-400 h-4">Select visual style for memory elements.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Game Canvas Viewport -->
+    <div class="relative bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-8 flex-1 flex flex-col justify-between shadow-2xl min-h-[480px] overflow-hidden">
+      
+      <!-- Background Ambient Glow -->
+      <div class="absolute -top-32 -left-32 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-32 -right-32 w-64 h-64 bg-fuchsia-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Top Stage Banner & Timer Bar -->
+      <div class="relative z-10 w-full space-y-3">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-2">
+            <span id="phaseBadge" class="px-3 py-1 rounded-full text-xs font-orbitron font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">
+              MISSION READY
+            </span>
+            <span id="roundBadge" class="px-3 py-1 rounded-full text-xs font-orbitron font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+              ROUND 1 / 5
+            </span>
+            <span id="subPhaseText" class="text-xs text-slate-400 hidden sm:inline">Prepare for cognitive scan</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <i data-lucide="clock" class="w-4 h-4 text-slate-400"></i>
+            <span id="timerText" class="font-orbitron text-base font-bold text-slate-200">--s</span>
+          </div>
+        </div>
+
+        <!-- Animated Progress Bar -->
+        <div class="w-full bg-slate-950 rounded-full h-2.5 p-0.5 border border-slate-800/80 overflow-hidden">
+          <div id="phaseProgressBar" class="bg-gradient-to-r from-cyan-500 via-indigo-500 to-fuchsia-500 h-full rounded-full w-0 transition-all duration-100"></div>
+        </div>
+      </div>
+
+      <!-- Center Dynamic Game Display Area -->
+      <div id="gameDisplay" class="relative z-10 flex-1 my-6 flex flex-col items-center justify-center min-h-[280px]">
+        
+        <!-- STATE 0: IDLE START SCREEN -->
+        <div id="screenIdle" class="text-center space-y-6 max-w-md">
+          <div class="inline-flex p-4 rounded-3xl bg-slate-800/50 border border-slate-700 text-cyan-400 mb-2 animate-float">
+            <i data-lucide="shield-alert" class="w-12 h-12"></i>
+          </div>
+          <h2 class="font-orbitron font-extrabold text-2xl sm:text-3xl text-white tracking-wide">
+            NEURO-SHIELD PROTOCOL
+          </h2>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Test your dual-task working memory! Memorize the key sequence, overcome high-speed visual & mental distractions, then recall the original code accurately.
+          </p>
+          <button onclick="game.startMission()" class="w-full py-4 px-8 rounded-2xl bg-gradient-to-r from-cyan-500 via-indigo-500 to-fuchsia-500 font-orbitron font-bold text-slate-950 text-base sm:text-lg tracking-wider hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-cyan-500/25 glow-cyan">
+            LAUNCH MISSION
+          </button>
+        </div>
+
+        <!-- STATE 1: MEMORIZATION PHASE -->
+        <div id="screenMemorize" class="hidden flex-col items-center justify-center space-y-6 w-full">
+          <div class="text-center space-y-1">
+            <h3 class="font-orbitron font-bold text-lg text-cyan-400 tracking-wider">MEMORIZE THE SEQUENCE</h3>
+            <p class="text-xs text-slate-400">Keep these items locked in your working memory!</p>
+          </div>
+
+          <!-- Display Box for Sequence -->
+          <div id="memorizeContainer" class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 p-6 bg-slate-950/60 rounded-3xl border border-cyan-500/30 glow-cyan min-h-[120px] w-full max-w-2xl">
+            <!-- Items generated dynamically -->
+          </div>
+        </div>
+
+        <!-- STATE 2: DISTRACTION PHASE -->
+        <div id="screenDistract" class="hidden flex-col items-center justify-center space-y-4 w-full h-full relative min-h-[280px]">
+          <div class="text-center space-y-1 z-10">
+            <h3 class="font-orbitron font-bold text-lg text-fuchsia-400 tracking-wider flex items-center justify-center gap-2">
+              <i data-lucide="zap" class="w-5 h-5 text-fuchsia-400 animate-bounce"></i> DISTRACTION DEFENSE ACTIVE!
+            </h3>
+            <p id="distractPromptText" class="text-xs text-slate-300 font-medium">Clear incoming targets while maintaining sequence memory!</p>
+          </div>
+
+          <!-- Interactive Distraction Arena -->
+          <div id="distractionArena" class="w-full h-64 bg-slate-950/80 rounded-2xl border border-fuchsia-500/30 relative overflow-hidden flex items-center justify-center p-4">
+            <!-- Dynamic Distractors Pop Here (Moving Targets, Quick Math, Color Stroop, etc.) -->
+          </div>
+
+          <!-- Distraction Score Counter -->
+          <div class="text-xs font-orbitron text-slate-400 flex items-center gap-2 bg-slate-800/60 px-4 py-1.5 rounded-full border border-slate-700">
+            <span>Deflect Score:</span>
+            <span id="distractScoreVal" class="text-fuchsia-400 font-bold text-sm">0</span>
+          </div>
+        </div>
+
+        <!-- STATE 3: RECALL PHASE -->
+        <div id="screenRecall" class="hidden flex-col items-center justify-center space-y-6 w-full max-w-2xl">
+          <div class="text-center space-y-1">
+            <h3 class="font-orbitron font-bold text-lg text-amber-400 tracking-wider">RECALL PROTOCOL</h3>
+            <p class="text-xs text-slate-400">Reconstruct the exact original sequence in order!</p>
+          </div>
+
+          <!-- Slots for Player Input -->
+          <div id="recallSlotsContainer" class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-4 bg-slate-950/80 rounded-2xl border border-amber-500/30 w-full min-h-[90px]">
+            <!-- Slots rendered here -->
+          </div>
+
+          <!-- Keypad / Options Grid for Selection -->
+          <div id="recallKeypad" class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 w-full">
+            <!-- Selection keys rendered dynamically -->
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex items-center space-x-3 pt-2">
+            <button onclick="game.undoRecall()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-300 flex items-center gap-1.5 transition-all">
+              <i data-lucide="undo-2" class="w-4 h-4"></i> Undo Last
+            </button>
+            <button onclick="game.clearRecall()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-rose-400 flex items-center gap-1.5 transition-all">
+              <i data-lucide="trash-2" class="w-4 h-4"></i> Clear All
+            </button>
+            <button onclick="game.submitRecall()" class="px-6 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-orbitron font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20">
+              Submit Sequence
+            </button>
+          </div>
+        </div>
+
+        <!-- STATE 4: RESULTS & EVALUATION -->
+        <div id="screenResults" class="hidden flex-col items-center justify-center space-y-6 text-center max-w-lg w-full">
+          <div id="resultHeaderIcon" class="p-4 rounded-3xl bg-slate-800 border border-slate-700 text-emerald-400">
+            <i data-lucide="award" class="w-12 h-12"></i>
+          </div>
+
+          <div class="space-y-1">
+            <h2 id="resultTitle" class="font-orbitron font-extrabold text-2xl text-white">MISSION SUCCESS!</h2>
+            <p id="resultSubtitle" class="text-xs text-slate-400">Cognitive performance telemetry evaluated.</p>
+          </div>
+
+          <!-- Stats Breakdown Grid -->
+          <div class="grid grid-cols-3 gap-3 w-full">
+            <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 text-center">
+              <p class="text-[10px] text-slate-400 uppercase font-semibold" id="resAccuracyLabel">Memory Accuracy</p>
+              <p id="resAccuracy" class="font-orbitron font-extrabold text-lg text-cyan-400">100%</p>
+            </div>
+            <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 text-center">
+              <p class="text-[10px] text-slate-400 uppercase font-semibold" id="resDistractLabel">Distraction Score</p>
+              <p id="resDistractScore" class="font-orbitron font-extrabold text-lg text-fuchsia-400">12 pts</p>
+            </div>
+            <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 text-center">
+              <p class="text-[10px] text-slate-400 uppercase font-semibold" id="resScoreLabel">Round Score</p>
+              <p id="resTotalScore" class="font-orbitron font-extrabold text-lg text-amber-400">850</p>
+            </div>
+          </div>
+
+          <!-- Unlocked Badge / Feedback Message -->
+          <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/60 w-full text-left flex items-start space-x-3">
+          <div class="p-2 bg-slate-800 rounded-xl text-amber-400 mt-0.5">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold text-slate-200" id="badgeTitle">Badge Earned: Neuro-Master</p>
+            <p class="text-xs text-slate-400 mt-0.5" id="badgeDesc">Outstanding working memory retention during high visual load.</p>
+          </div>
+        </div>
+
+        <!-- Telemetry History Log -->
+        <div id="historyLogContainer" class="w-full text-left space-y-1 bg-slate-950/60 p-3 rounded-2xl border border-slate-800 text-xs hidden">
+          <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Campaign Telemetry Log (5 Rounds)</p>
+          <div id="historyList" class="max-h-24 overflow-y-auto space-y-1 divide-y divide-slate-800/60">
+            <!-- History items appended dynamically -->
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center space-x-3 w-full pt-2">
+            <button id="nextRoundBtn" onclick="game.nextRoundOrRestart()" class="flex-1 py-3 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 font-orbitron font-bold text-slate-950 text-sm tracking-wider hover:brightness-110 transition-all shadow-lg shadow-cyan-500/20">
+              NEXT ROUND (2/5)
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Telemetry Strip -->
+      <div class="relative z-10 w-full pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs text-slate-400">
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          <span>Cognitive Load Index: <strong id="cognitiveLoadVal" class="text-slate-200 font-mono">Moderate</strong></span>
+        </div>
+        <div class="text-right">
+          <span>Target Group: <strong>10-12 yrs</strong></span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    /* Sound Synthesizer using Web Audio API (Zero External Audio Files) */
+    class AudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.soundEnabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+      }
+
+      playHighPitch() {
+        this.playTone(880, 'sine', 0.25, 0.15);
+      }
+
+      playLowPitch() {
+        this.playTone(220, 'triangle', 0.25, 0.2);
+      }
+
+      playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.1) {
+        if (!this.soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          
+          gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.warn("Audio play blocked", e);
+        }
+      }
+
+      playPop() {
+        this.playTone(520, 'sine', 0.08, 0.15);
+      }
+
+      playLaser() {
+        if (!this.soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(150, this.ctx.currentTime + 0.15);
+          
+          gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.15);
+        } catch (e) {}
+      }
+
+      playSuccess() {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 'triangle', 0.2, 0.15), idx * 80);
+        });
+      }
+
+      playError() {
+        this.playTone(180, 'sawtooth', 0.3, 0.2);
+      }
+
+      playBeep() {
+        this.playTone(440, 'sine', 0.05, 0.08);
+      }
+    }
+
+    const audio = new AudioEngine();
+
+    // Sequence Item Pools
+    const ITEM_POOLS = {
+      gems: [
+        { id: 'g1', label: 'Ruby', icon: 'gem', color: 'bg-rose-500 border-rose-400 text-rose-200', hex: '#f43f5e' },
+        { id: 'g2', label: 'Emerald', icon: 'shield', color: 'bg-emerald-500 border-emerald-400 text-emerald-200', hex: '#10b981' },
+        { id: 'g3', label: 'Sapphire', icon: 'circle', color: 'bg-cyan-500 border-cyan-400 text-cyan-200', hex: '#06b6d4' },
+        { id: 'g4', label: 'Amethyst', icon: 'hexagon', color: 'bg-fuchsia-500 border-fuchsia-400 text-fuchsia-200', hex: '#d946ef' },
+        { id: 'g5', label: 'Topaz', icon: 'sun', color: 'bg-amber-500 border-amber-400 text-amber-200', hex: '#f59e0b' },
+        { id: 'g6', label: 'Prism', icon: 'star', color: 'bg-violet-500 border-violet-400 text-violet-200', hex: '#8b5cf6' },
+        { id: 'g7', label: 'Citrine', icon: 'zap', color: 'bg-yellow-400 border-yellow-300 text-yellow-950', hex: '#facc15' }
+      ],
+      numbers: [
+        { id: 'n1', label: 'Code 1', symbol: '1', color: 'bg-cyan-600 border-cyan-400 text-cyan-100' },
+        { id: 'n2', label: 'Code 2', symbol: '2', color: 'bg-indigo-600 border-indigo-400 text-indigo-100' },
+        { id: 'n3', label: 'Code 3', symbol: '3', color: 'bg-fuchsia-600 border-fuchsia-400 text-fuchsia-100' },
+        { id: 'n4', label: 'Code 4', symbol: '4', color: 'bg-emerald-600 border-emerald-400 text-emerald-100' },
+        { id: 'n5', label: 'Code 5', symbol: '5', color: 'bg-amber-600 border-amber-400 text-amber-100' },
+        { id: 'n6', label: 'Code 6', symbol: '6', color: 'bg-rose-600 border-rose-400 text-rose-100' },
+        { id: 'n7', label: 'Code 7', symbol: '7', color: 'bg-teal-600 border-teal-400 text-teal-100' }
+      ],
+      shapes: [
+        { id: 's1', label: 'Triangle', icon: 'triangle', color: 'bg-blue-500 border-blue-400 text-blue-100' },
+        { id: 's2', label: 'Square', icon: 'square', color: 'bg-emerald-500 border-emerald-400 text-emerald-100' },
+        { id: 's3', label: 'Circle', icon: 'circle', color: 'bg-pink-500 border-pink-400 text-pink-100' },
+        { id: 's4', label: 'Hexagon', icon: 'hexagon', color: 'bg-purple-500 border-purple-400 text-purple-100' },
+        { id: 's5', label: 'Diamond', icon: 'octi-gon', color: 'bg-amber-500 border-amber-400 text-amber-100' },
+        { id: 's6', label: 'Star', icon: 'star', color: 'bg-rose-500 border-rose-400 text-rose-100' },
+        { id: 's7', label: 'Pentagon', icon: 'box', color: 'bg-cyan-500 border-cyan-400 text-cyan-100' }
+      ]
+    };
+
+    class NeuroGame {
+      constructor() {
+        this.difficulty = 'medium'; // 'easy', 'medium', 'hard'
+        this.timeLimit = 10; // seconds per phase
+        this.sequenceType = 'gems';
+        
+        this.state = 'IDLE'; // IDLE, MEMORIZATION, DISTRACT, RECALL, RESULTS
+        this.targetSequence = [];
+        this.userSequence = [];
+        this.distractionScore = 0;
+        
+        // 5-Round Campaign Management
+        this.currentRound = 1;
+        this.maxRounds = 5;
+        this.campaignData = [];
+
+        this.timerInterval = null;
+        this.distractionInterval = null;
+        this.timeRemaining = 0;
+        
+        this.highScore = parseInt(localStorage.getItem('neuro_highscore') || '0');
+        this.streak = 0;
+        this.roundHistory = [];
+
+        this.initUI();
+      }
+
+      initUI() {
+        document.getElementById('topHighScore').textContent = this.highScore;
+        this.setDifficulty(this.difficulty);
+        this.setTimeLimit(this.timeLimit);
+        this.updateRoundBadge();
+        lucide.createIcons();
+      }
+
+      updateRoundBadge() {
+        const badge = document.getElementById('roundBadge');
+        if (badge) {
+          badge.textContent = `ROUND ${this.currentRound} / ${this.maxRounds}`;
+        }
+      }
+
+      toggleSound() {
+        audio.soundEnabled = !audio.soundEnabled;
+        const icon = document.getElementById('soundIcon');
+        if (audio.soundEnabled) {
+          icon.setAttribute('data-lucide', 'volume-2');
+          audio.playPop();
+        } else {
+          icon.setAttribute('data-lucide', 'volume-x');
+        }
+        lucide.createIcons();
+      }
+
+      setDifficulty(diff) {
+        this.difficulty = diff;
+        document.querySelectorAll('.diff-btn').forEach(b => {
+          b.className = "diff-btn py-1.5 px-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white";
+        });
+
+        const activeBtn = document.getElementById(`btnDiff${diff.charAt(0).toUpperCase() + diff.slice(1)}`);
+        if (activeBtn) {
+          activeBtn.className = "diff-btn py-1.5 px-2 text-xs font-bold rounded-lg transition-all bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30";
+        }
+
+        const desc = document.getElementById('diffDesc');
+        if (diff === 'easy') {
+          desc.textContent = "3-4 sequence items, simple mental math distractors.";
+        } else if (diff === 'medium') {
+          desc.textContent = "5 sequence items, multi-operation math & target distractors.";
+        } else {
+          desc.textContent = "6-7 sequence items, fast multi-task math & audio distractors!";
+        }
+      }
+
+      setTimeLimit(seconds) {
+        this.timeLimit = seconds;
+        document.querySelectorAll('.time-btn').forEach(b => {
+          b.className = "time-btn py-1.5 px-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white";
+        });
+
+        const activeBtn = document.getElementById(`btnTime${seconds}`);
+        if (activeBtn) {
+          activeBtn.className = "time-btn py-1.5 px-2 text-xs font-bold rounded-lg transition-all bg-fuchsia-500 text-slate-950 shadow-md shadow-fuchsia-500/30";
+        }
+      }
+
+      setSequenceType(type) {
+        this.sequenceType = type;
+      }
+
+      hideAllScreens() {
+        ['screenIdle', 'screenMemorize', 'screenDistract', 'screenRecall', 'screenResults'].forEach(id => {
+          document.getElementById(id).classList.add('hidden');
+          document.getElementById(id).classList.remove('flex');
+        });
+      }
+
+      showScreen(id) {
+        this.hideAllScreens();
+        const el = document.getElementById(id);
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+      }
+
+      startMission() {
+        audio.playPop();
+        document.getElementById('controlsCard').classList.add('opacity-50', 'pointer-events-none');
+        this.updateRoundBadge();
+
+        let seqLength = 4;
+        if (this.difficulty === 'easy') seqLength = Math.floor(Math.random() * 2) + 3; // 3 or 4
+        else if (this.difficulty === 'medium') seqLength = 5;
+        else seqLength = Math.floor(Math.random() * 2) + 6; // 6 or 7
+
+        const pool = ITEM_POOLS[this.sequenceType];
+        this.targetSequence = [];
+        
+        for (let i = 0; i < seqLength; i++) {
+          const randomIndex = Math.floor(Math.random() * pool.length);
+          this.targetSequence.push(pool[randomIndex]);
+        }
+
+        this.userSequence = [];
+        this.distractionScore = 0;
+
+        const loadVal = document.getElementById('cognitiveLoadVal');
+        if (this.difficulty === 'easy') loadVal.textContent = "Light (3-4 items)";
+        else if (this.difficulty === 'medium') loadVal.textContent = "Moderate (5 items)";
+        else loadVal.textContent = "High Dual-Task (6-7 items)";
+
+        this.startMemorizePhase();
+      }
+
+      startMemorizePhase() {
+        this.state = 'MEMORIZATION';
+        this.showScreen('screenMemorize');
+
+        document.getElementById('phaseBadge').textContent = `PHASE 1: MEMORIZE (RD ${this.currentRound}/5)`;
+        document.getElementById('phaseBadge').className = "px-3 py-1 rounded-full text-xs font-orbitron font-bold uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 glow-cyan";
+        document.getElementById('subPhaseText').textContent = "Observe items revealed one-by-one!";
+
+        const container = document.getElementById('memorizeContainer');
+        container.innerHTML = '';
+
+        const stepDelay = Math.min(900, Math.floor((this.timeLimit * 700) / this.targetSequence.length));
+
+        this.targetSequence.forEach((item, index) => {
+          setTimeout(() => {
+            if (this.state !== 'MEMORIZATION') return;
+            audio.playTone(320 + index * 110, 'sine', 0.15, 0.12);
+
+            const itemEl = document.createElement('div');
+            itemEl.className = `flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-2 shadow-lg transition-all transform scale-100 opacity-100 animate-pulse-glow ${item.color}`;
+
+            if (item.symbol) {
+              itemEl.innerHTML = `<span class="font-orbitron font-extrabold text-2xl sm:text-3xl">${item.symbol}</span>`;
+            } else {
+              itemEl.innerHTML = `
+                <i data-lucide="${item.icon}" class="w-7 h-7 sm:w-9 sm:h-9"></i>
+                <span class="text-[10px] font-semibold tracking-wider uppercase mt-1.5 opacity-90">${item.label}</span>
+              `;
+            }
+
+            container.appendChild(itemEl);
+            lucide.createIcons();
+          }, index * stepDelay);
+        });
+
+        this.runTimer(this.timeLimit, () => {
+          this.startDistractionPhase();
+        });
+      }
+
+      startDistractionPhase() {
+        this.state = 'DISTRACT';
+        this.showScreen('screenDistract');
+
+        document.getElementById('phaseBadge').textContent = `PHASE 2: MATH DEFENSE (RD ${this.currentRound}/5)`;
+        document.getElementById('phaseBadge').className = "px-3 py-1 rounded-full text-xs font-orbitron font-bold uppercase tracking-wider bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 glow-magenta";
+        document.getElementById('subPhaseText').textContent = "Solve mental math problems quickly while holding the sequence!";
+
+        document.getElementById('distractScoreVal').textContent = this.distractionScore;
+        const arena = document.getElementById('distractionArena');
+        arena.innerHTML = '';
+
+        const spawnRate = this.difficulty === 'easy' ? 2000 : (this.difficulty === 'medium' ? 1500 : 1100);
+
+        this.spawnDistractorTask();
+        this.distractionInterval = setInterval(() => {
+          if (this.state === 'DISTRACT') {
+            this.spawnDistractorTask();
+          }
+        }, spawnRate);
+
+        this.runTimer(this.timeLimit, () => {
+          this.startRecallPhase();
+        });
+      }
+
+      spawnDistractorTask() {
+        const arena = document.getElementById('distractionArena');
+        if (!arena) return;
+
+        // Weighted choices prioritizing mental math operations (60% math, 40% other tasks)
+        const rand = Math.random();
+        const taskType = rand < 0.65 ? 'math' : (rand < 0.85 ? 'orb' : 'stroop');
+
+        if (taskType === 'math') {
+          const mathBox = document.createElement('div');
+          
+          // Generate age 10-12 friendly simple math operations: +, -, *, /
+          const opType = Math.floor(Math.random() * 4); // 0: add, 1: sub, 2: mult, 3: div
+          let num1, num2, symbol, correctAns;
+
+          if (opType === 0) { // Addition (e.g. 14 + 18)
+            num1 = Math.floor(Math.random() * 25) + 6;
+            num2 = Math.floor(Math.random() * 25) + 5;
+            symbol = '+';
+            correctAns = num1 + num2;
+          } else if (opType === 1) { // Subtraction (e.g. 42 - 17)
+            num1 = Math.floor(Math.random() * 30) + 20;
+            num2 = Math.floor(Math.random() * 18) + 4;
+            symbol = '-';
+            correctAns = num1 - num2;
+          } else if (opType === 2) { // Multiplication (e.g. 7 x 8)
+            num1 = Math.floor(Math.random() * 8) + 3;
+            num2 = Math.floor(Math.random() * 9) + 3;
+            symbol = '×';
+            correctAns = num1 * num2;
+          } else { // Simple Exact Division (e.g. 36 / 4)
+            num2 = Math.floor(Math.random() * 7) + 2;
+            const multiplier = Math.floor(Math.random() * 9) + 2;
+            num1 = num2 * multiplier;
+            symbol = '÷';
+            correctAns = multiplier;
+          }
+
+          // Generate 2 plausibly incorrect distractor answers
+          const offset1 = Math.random() > 0.5 ? (Math.floor(Math.random() * 3) + 1) : -(Math.floor(Math.random() * 3) + 1);
+          let wrongAns1 = correctAns + offset1;
+          if (wrongAns1 < 0) wrongAns1 = correctAns + 2;
+
+          let wrongAns2 = correctAns + (offset1 > 0 ? -2 : 3);
+          if (wrongAns2 === wrongAns1 || wrongAns2 < 0) wrongAns2 = correctAns + 4;
+
+          const options = [correctAns, wrongAns1, wrongAns2].sort(() => Math.random() - 0.5);
+
+          mathBox.className = "absolute p-3 bg-slate-900/95 border-2 border-fuchsia-500 rounded-2xl shadow-xl flex flex-col items-center space-y-2 z-20 animate-float";
+          
+          const posX = Math.max(10, Math.floor(Math.random() * (arena.clientWidth - 200)));
+          const posY = Math.max(10, Math.floor(Math.random() * (arena.clientHeight - 110)));
+          mathBox.style.left = `${posX}px`;
+          mathBox.style.top = `${posY}px`;
+
+          mathBox.innerHTML = `
+            <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">MIND MATH MATH!</span>
+            <span class="font-orbitron text-sm sm:text-base text-slate-100 font-extrabold">${num1} ${symbol} ${num2} = ?</span>
+            <div class="flex gap-1.5">
+              ${options.map(opt => `
+                <button class="px-3 py-1.5 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 rounded-xl text-xs font-orbitron font-bold text-cyan-400 border border-slate-700 transition-all active:scale-90 btn-ans">${opt}</button>
+              `).join('')}
+            </div>
+          `;
+
+          const btns = mathBox.querySelectorAll('.btn-ans');
+          btns.forEach(btn => {
+            btn.onclick = () => {
+              const val = parseInt(btn.textContent);
+              if (val === correctAns) {
+                audio.playPop();
+                this.distractionScore += 20;
+                // Pop visual indicator
+                btn.className = "px-3 py-1.5 bg-emerald-500 text-slate-950 rounded-xl text-xs font-bold";
+              } else {
+                audio.playError();
+                btn.className = "px-3 py-1.5 bg-rose-600 text-white rounded-xl text-xs font-bold";
+              }
+              document.getElementById('distractScoreVal').textContent = this.distractionScore;
+              setTimeout(() => mathBox.remove(), 180);
+            };
+          });
+
+          arena.appendChild(mathBox);
+          setTimeout(() => { if (mathBox.parentNode) mathBox.remove(); }, 2600);
+
+        } else if (taskType === 'orb') {
+          const orb = document.createElement('button');
+          const size = Math.floor(Math.random() * 20) + 48;
+          const colors = [
+            'bg-cyan-500 border-cyan-300 shadow-cyan-500/50',
+            'bg-fuchsia-500 border-fuchsia-300 shadow-fuchsia-500/50',
+            'bg-amber-400 border-amber-200 shadow-amber-400/50 text-slate-950',
+            'bg-emerald-500 border-emerald-300 shadow-emerald-500/50'
+          ];
+          const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+          const maxX = arena.clientWidth - size - 20;
+          const maxY = arena.clientHeight - size - 20;
+          const posX = Math.max(10, Math.floor(Math.random() * maxX));
+          const posY = Math.max(10, Math.floor(Math.random() * maxY));
+
+          orb.className = `target-orb absolute rounded-full border-2 flex items-center justify-center font-bold text-xs shadow-lg cursor-pointer ${randomColor}`;
+          orb.style.width = `${size}px`;
+          orb.style.height = `${size}px`;
+          orb.style.left = `${posX}px`;
+          orb.style.top = `${posY}px`;
+
+          orb.innerHTML = `<i data-lucide="crosshair" class="w-5 h-5 animate-spin"></i>`;
+          
+          orb.onclick = () => {
+            audio.playLaser();
+            this.distractionScore += 10;
+            document.getElementById('distractScoreVal').textContent = this.distractionScore;
+            orb.style.transform = 'scale(1.4)';
+            orb.style.opacity = '0';
+            setTimeout(() => orb.remove(), 100);
+          };
+
+          arena.appendChild(orb);
+          lucide.createIcons();
+
+          setTimeout(() => {
+            if (orb.parentNode) {
+              orb.style.opacity = '0';
+              setTimeout(() => orb.remove(), 200);
+            }
+          }, 1800);
+
+        } else if (taskType === 'stroop') {
+          const stroopBox = document.createElement('div');
+          const colorDefs = [
+            { name: 'RED', class: 'text-rose-500' },
+            { name: 'BLUE', class: 'text-cyan-400' },
+            { name: 'GREEN', class: 'text-emerald-400' },
+            { name: 'YELLOW', class: 'text-amber-300' }
+          ];
+          const textObj = colorDefs[Math.floor(Math.random() * colorDefs.length)];
+          const colorObj = colorDefs[Math.floor(Math.random() * colorDefs.length)];
+          const isMatch = textObj.name === colorObj.name;
+
+          stroopBox.className = "absolute p-3 bg-slate-900 border-2 border-fuchsia-500 rounded-2xl shadow-xl flex flex-col items-center space-y-2 z-20 animate-float";
+          const posX = Math.max(10, Math.floor(Math.random() * (arena.clientWidth - 180)));
+          const posY = Math.max(10, Math.floor(Math.random() * (arena.clientHeight - 110)));
+          stroopBox.style.left = `${posX}px`;
+          stroopBox.style.top = `${posY}px`;
+
+          stroopBox.innerHTML = `
+            <span class="text-[10px] font-bold text-slate-400 uppercase">Text Color Matches Word?</span>
+            <span class="font-orbitron text-base font-black tracking-wider ${colorObj.class}">${textObj.name}</span>
+            <div class="flex gap-2">
+              <button class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors btn-stroop" data-ans="true">YES</button>
+              <button class="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold transition-colors btn-stroop" data-ans="false">NO</button>
+            </div>
+          `;
+
+          stroopBox.querySelectorAll('.btn-stroop').forEach(btn => {
+            btn.onclick = () => {
+              const userAns = btn.getAttribute('data-ans') === 'true';
+              if (userAns === isMatch) {
+                audio.playPop();
+                this.distractionScore += 15;
+              } else {
+                audio.playError();
+              }
+              document.getElementById('distractScoreVal').textContent = this.distractionScore;
+              stroopBox.remove();
+            };
+          });
+
+          arena.appendChild(stroopBox);
+          setTimeout(() => { if (stroopBox.parentNode) stroopBox.remove(); }, 2200);
+        }
+      }
+
+      startRecallPhase() {
+        this.state = 'RECALL';
+        this.showScreen('screenRecall');
+
+        document.getElementById('phaseBadge').textContent = `PHASE 3: RECALL (RD ${this.currentRound}/5)`;
+        document.getElementById('phaseBadge').className = "px-3 py-1 rounded-full text-xs font-orbitron font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 glow-amber";
+        document.getElementById('subPhaseText').textContent = "Select items in the exact original sequence order!";
+
+        this.userSequence = [];
+        this.renderRecallSlots();
+        this.renderRecallKeypad();
+
+        this.runTimer(this.timeLimit * 1.5, () => {
+          this.submitRecall();
+        });
+      }
+
+      renderRecallSlots() {
+        const slotsContainer = document.getElementById('recallSlotsContainer');
+        slotsContainer.innerHTML = '';
+
+        for (let i = 0; i < this.targetSequence.length; i++) {
+          const slot = document.createElement('div');
+          const userItem = this.userSequence[i];
+
+          if (userItem) {
+            slot.className = `w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border-2 flex flex-col items-center justify-center shadow-md cursor-pointer hover:opacity-80 active:scale-95 transition-all ${userItem.color}`;
+            if (userItem.symbol) {
+              slot.innerHTML = `<span class="font-orbitron font-extrabold text-xl">${userItem.symbol}</span>`;
+            } else {
+              slot.innerHTML = `<i data-lucide="${userItem.icon}" class="w-6 h-6"></i>`;
+            }
+            slot.title = "Click to remove this item";
+            slot.onclick = () => this.removeRecallItem(i);
+          } else {
+            slot.className = "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border-2 border-dashed border-slate-700 bg-slate-900/60 flex items-center justify-center text-slate-600 font-orbitron font-bold text-xs";
+            slot.textContent = `#${i + 1}`;
+          }
+
+          slotsContainer.appendChild(slot);
+        }
+        lucide.createIcons();
+      }
+
+      removeRecallItem(index) {
+        if (index < this.userSequence.length) {
+          audio.playBeep();
+          this.userSequence.splice(index, 1);
+          this.renderRecallSlots();
+        }
+      }
+
+      renderRecallKeypad() {
+        const keypad = document.getElementById('recallKeypad');
+        keypad.innerHTML = '';
+
+        const pool = ITEM_POOLS[this.sequenceType];
+
+        pool.forEach(item => {
+          const keyBtn = document.createElement('button');
+          keyBtn.className = `p-3 sm:p-4 rounded-2xl border border-slate-700 bg-slate-900 hover:bg-slate-800 active:scale-95 transition-all flex flex-col items-center justify-center min-w-[64px] min-h-[64px] group shadow-md hover:border-cyan-500/50`;
+          
+          if (item.symbol) {
+            keyBtn.innerHTML = `<span class="font-orbitron font-bold text-xl text-slate-200 group-hover:text-cyan-400">${item.symbol}</span>`;
+          } else {
+            keyBtn.innerHTML = `
+              <i data-lucide="${item.icon}" class="w-6 h-6 text-slate-300 group-hover:text-cyan-400"></i>
+              <span class="text-[10px] text-slate-400 mt-1">${item.label}</span>
+            `;
+          }
+
+          keyBtn.onclick = () => {
+            if (this.userSequence.length < this.targetSequence.length) {
+              audio.playBeep();
+              this.userSequence.push(item);
+              this.renderRecallSlots();
+
+              if (this.userSequence.length === this.targetSequence.length) {
+                setTimeout(() => this.submitRecall(), 250);
+              }
+            }
+          };
+
+          keypad.appendChild(keyBtn);
+        });
+
+        lucide.createIcons();
+      }
+
+      undoRecall() {
+        if (this.userSequence.length > 0) {
+          audio.playBeep();
+          this.userSequence.pop();
+          this.renderRecallSlots();
+        }
+      }
+
+      clearRecall() {
+        if (this.userSequence.length > 0) {
+          audio.playBeep();
+          this.userSequence = [];
+          this.renderRecallSlots();
+        }
+      }
+
+      submitRecall() {
+        if (this.state !== 'RECALL') return;
+        this.clearTimer();
+
+        this.state = 'RESULTS';
+        this.showScreen('screenResults');
+
+        // Evaluate match accuracy
+        let correctMatches = 0;
+        this.targetSequence.forEach((item, idx) => {
+          if (this.userSequence[idx] && this.userSequence[idx].id === item.id) {
+            correctMatches++;
+          }
+        });
+
+        const accuracyPct = Math.round((correctMatches / this.targetSequence.length) * 100);
+        
+        let diffMultiplier = 1;
+        if (this.difficulty === 'medium') diffMultiplier = 1.4;
+        if (this.difficulty === 'hard') diffMultiplier = 2.0;
+
+        const memoryPoints = Math.round((accuracyPct / 100) * 500 * diffMultiplier);
+        const distractionPoints = Math.round(this.distractionScore * diffMultiplier);
+        const totalRoundScore = memoryPoints + distractionPoints;
+
+        // Store round outcome into campaign history
+        const roundRecord = {
+          round: this.currentRound,
+          accuracy: accuracyPct,
+          distractionScore: this.distractionScore,
+          score: totalRoundScore,
+          diff: this.difficulty.toUpperCase()
+        };
+        this.campaignData.push(roundRecord);
+        this.roundHistory.unshift(roundRecord);
+
+        // Calculate Campaign Aggregates
+        const totalCampaignScore = this.campaignData.reduce((acc, curr) => acc + curr.score, 0);
+        const avgAccuracy = Math.round(this.campaignData.reduce((acc, curr) => acc + curr.accuracy, 0) / this.campaignData.length);
+
+        const resTitle = document.getElementById('resultTitle');
+        const resSubtitle = document.getElementById('resultSubtitle');
+        const resIcon = document.getElementById('resultHeaderIcon');
+        const nextBtn = document.getElementById('nextRoundBtn');
+
+        const isCampaignFinished = (this.currentRound === this.maxRounds);
+
+        if (isCampaignFinished) {
+          // 5-Round Campaign Summary State
+          document.getElementById('controlsCard').classList.remove('opacity-50', 'pointer-events-none');
+          
+          resTitle.textContent = "CAMPAIGN COMPLETED! (5/5)";
+          resTitle.className = "font-orbitron font-extrabold text-2xl text-cyan-400";
+          resSubtitle.textContent = "5-Round Cognitive Dual-Task Assessment Complete.";
+
+          document.getElementById('resAccuracyLabel').textContent = "Avg Accuracy";
+          document.getElementById('resAccuracy').textContent = `${avgAccuracy}%`;
+
+          document.getElementById('resDistractLabel').textContent = "Total Deflect";
+          const totalDistract = this.campaignData.reduce((acc, curr) => acc + curr.distractionScore, 0);
+          document.getElementById('resDistractScore').textContent = `${totalDistract} pts`;
+
+          document.getElementById('resScoreLabel').textContent = "5-Rd Score";
+          document.getElementById('resTotalScore').textContent = totalCampaignScore;
+
+          if (totalCampaignScore > this.highScore) {
+            this.highScore = totalCampaignScore;
+            localStorage.setItem('neuro_highscore', this.highScore);
+            document.getElementById('topHighScore').textContent = this.highScore;
+          }
+
+          nextBtn.textContent = "LAUNCH NEW 5-ROUND CAMPAIGN";
+          nextBtn.className = "flex-1 py-3 px-6 rounded-xl bg-gradient-to-r from-emerald-400 via-cyan-500 to-indigo-500 font-orbitron font-bold text-slate-950 text-sm tracking-wider hover:brightness-110 transition-all shadow-lg shadow-cyan-500/30";
+
+        } else {
+          // Individual Round Results State
+          resTitle.textContent = `ROUND ${this.currentRound} COMPLETED`;
+          resTitle.className = "font-orbitron font-extrabold text-2xl text-white";
+          resSubtitle.textContent = `Round ${this.currentRound} of ${this.maxRounds} finished. Prepare for next mission!`;
+
+          document.getElementById('resAccuracyLabel').textContent = "Memory Accuracy";
+          document.getElementById('resAccuracy').textContent = `${accuracyPct}%`;
+
+          document.getElementById('resDistractLabel').textContent = "Math Deflect";
+          document.getElementById('resDistractScore').textContent = `${this.distractionScore} pts`;
+
+          document.getElementById('resScoreLabel').textContent = "Round Score";
+          document.getElementById('resTotalScore').textContent = totalRoundScore;
+
+          nextBtn.textContent = `NEXT ROUND (${this.currentRound + 1} / 5)`;
+          nextBtn.className = "flex-1 py-3 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 font-orbitron font-bold text-slate-950 text-sm tracking-wider hover:brightness-110 transition-all shadow-lg shadow-cyan-500/20";
+        }
+
+        // Icon & Sound Feedback
+        if (accuracyPct === 100) {
+          audio.playSuccess();
+          this.streak++;
+          resIcon.className = "p-4 rounded-3xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 glow-emerald";
+          resIcon.innerHTML = `<i data-lucide="award" class="w-12 h-12"></i>`;
+        } else if (accuracyPct >= 60) {
+          audio.playPop();
+          resIcon.className = "p-4 rounded-3xl bg-amber-500/20 border border-amber-500/40 text-amber-400 glow-amber";
+          resIcon.innerHTML = `<i data-lucide="check-circle" class="w-12 h-12"></i>`;
+        } else {
+          audio.playError();
+          this.streak = 0;
+          resIcon.className = "p-4 rounded-3xl bg-rose-500/20 border border-rose-500/40 text-rose-400";
+          resIcon.innerHTML = `<i data-lucide="alert-triangle" class="w-12 h-12"></i>`;
+        }
+
+        document.getElementById('topStreak').textContent = this.streak;
+
+        // Render History Log
+        this.renderHistoryLog();
+
+        // Badge system
+        const badgeTitle = document.getElementById('badgeTitle');
+        const badgeDesc = document.getElementById('badgeDesc');
+
+        if (isCampaignFinished) {
+          if (avgAccuracy === 100) {
+            badgeTitle.textContent = "Grand Badge: Grandmaster Mind Shield 👑";
+            badgeDesc.textContent = "100% flawless memory accuracy maintained across all 5 campaign rounds!";
+          } else if (avgAccuracy >= 80) {
+            badgeTitle.textContent = "Grand Badge: Quantum Dual-Tasker ⚡";
+            badgeDesc.textContent = "High working memory precision while solving high-speed mental math!";
+          } else {
+            badgeTitle.textContent = "Grand Badge: Cadet Neuro-Shield 🛡️";
+            badgeDesc.textContent = "Completed 5 cognitive dual-task rounds. Keep practicing to boost retention!";
+          }
+        } else {
+          if (accuracyPct === 100) {
+            badgeTitle.textContent = "Round Badge: Flawless Sequence Lock 🧠";
+            badgeDesc.textContent = "Perfect item order recall while solving mental math distractions!";
+          } else {
+            badgeTitle.textContent = "Round Badge: Math Defender 📐";
+            badgeDesc.textContent = "Solid performance solving mental math operations under memory load!";
+          }
+        }
+
+        lucide.createIcons();
+      }
+
+      nextRoundOrRestart() {
+        if (this.currentRound < this.maxRounds && this.campaignData.length > 0 && this.campaignData.length < 5) {
+          this.currentRound++;
+          this.startMission();
+        } else {
+          // Reset for new 5-Round Campaign
+          this.currentRound = 1;
+          this.campaignData = [];
+          this.startMission();
+        }
+      }
+
+      renderHistoryLog() {
+        const container = document.getElementById('historyLogContainer');
+        const list = document.getElementById('historyList');
+        if (!container || !list) return;
+
+        container.classList.remove('hidden');
+        list.innerHTML = '';
+
+        this.campaignData.forEach(item => {
+          const row = document.createElement('div');
+          row.className = "flex justify-between items-center pt-1 text-slate-300 font-mono text-[11px]";
+          row.innerHTML = `
+            <span>Round ${item.round} (${item.diff})</span>
+            <span class="${item.accuracy === 100 ? 'text-emerald-400 font-bold' : 'text-slate-400'}">Acc: ${item.accuracy}%</span>
+            <span class="text-fuchsia-400">Math: ${item.distractionScore}pts</span>
+            <span class="text-amber-400 font-bold">${item.score} pts</span>
+          `;
+          list.appendChild(row);
+        });
+      }
+
+      runTimer(durationSeconds, onComplete) {
+        this.clearTimer();
+        this.timeRemaining = durationSeconds;
+
+        const timerText = document.getElementById('timerText');
+        const progressBar = document.getElementById('phaseProgressBar');
+
+        timerText.textContent = `${this.timeRemaining.toFixed(1)}s`;
+        progressBar.style.width = '100%';
+
+        const startTime = Date.now();
+        const totalMs = durationSeconds * 1000;
+
+        this.timerInterval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const remainingMs = Math.max(0, totalMs - elapsed);
+          this.timeRemaining = remainingMs / 1000;
+
+          timerText.textContent = `${this.timeRemaining.toFixed(1)}s`;
+          const pct = (remainingMs / totalMs) * 100;
+          progressBar.style.width = `${pct}%`;
+
+          if (remainingMs <= 0) {
+            this.clearTimer();
+            if (onComplete) onComplete();
+          }
+        }, 50);
+      }
+
+      clearTimer() {
+        if (this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+        if (this.distractionInterval) {
+          clearInterval(this.distractionInterval);
+          this.distractionInterval = null;
+        }
+      }
+    }
+
+    let game;
+    window.addEventListener('DOMContentLoaded', () => {
+      game = new NeuroGame();
+    });
+  </script>
+</body>
+</html>
